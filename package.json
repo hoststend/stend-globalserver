@@ -1,0 +1,27 @@
+{
+	"private": true,
+	"name": "stend-globalserver",
+	"version": "1.0.0",
+	"description": "Serveur global permettant l'accès à des fonctionnalités entres plusieurs instances de Stend",
+	"main": "index.js",
+	"scripts": {
+		"start": "node index.js",
+		"dev": "nodemon index.js",
+		"admin": "node admin.js"
+	},
+	"author": "JohanStickman",
+	"license": "MIT",
+	"dependencies": {
+		"@fastify/cors": "^8.3.0",
+		"@fastify/formbody": "^7.4.0",
+		"@fastify/rate-limit": "^9.1.0",
+		"@supabase/supabase-js": "^2.44.4",
+		"dotenv": "^16.0.3",
+		"fastify": "^4.15.0",
+		"node-fetch": "2.7.0"
+	},
+	"devDependencies": {
+		"eslint": "^8.56.0",
+		"nodemon": "^2.0.13"
+	}
+}
