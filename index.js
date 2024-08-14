@@ -49,7 +49,7 @@ async function getUserFromRequest(req){
 	// Obtenir l'utilisateur
 	var user = await supabase.from("stendglobal-accounts").select("*").eq("token", token)
 	if(user.error) throw { statusCode: 500, error: "Erreur lors de l'obtention du profil", message: `Supabase a retourné une erreur : ${user.error.message}` }
-	if(!user.data.length) throw { statusCode: 401, error: "Non autorisé", message: "Votre session a expiré, vous devrez vous reconnecter", action: "DELETE_TOKEN" }
+	if(!user.data.length) throw { statusCode: 401, error: "Non autorisé", message: "Votre session a expiré, vous devez vous reconnecter", action: "DELETE_TOKEN" }
 	if(!user.data[0]?.id) throw { statusCode: 500, error: "Erreur lors de l'obtention du profil", message: "Votre profil a pu être obtenu mais il semblerait que celui-ci soit invalide" }
 	return user.data[0]
 }
@@ -212,7 +212,7 @@ function createRoutes(){
 		transferts = transferts.data.filter(transfer => parseInt(transfer.expiresDate) > new Date().getTime())
 
 		// Retourner les transferts
-		return { success: true, transferts: transferts?.map(transfer => { return { id: transfer.transferId, webUrl: transfer.webUrl, expiresDate: transfer.expiresDate, nickname: transfer.nickname, fileName: transfer.fileName } }) || [] }
+		return { success: true, userId: user?.id, transferts: transferts?.map(transfer => { return { id: transfer.transferId, webUrl: transfer.webUrl, expiresDate: transfer.expiresDate, nickname: transfer.nickname, fileName: transfer.fileName } }) || [] }
 	})
 	fastify.post("/account/reset", { config: { rateLimit: { max: 10, timeWindow: "1 minute" } } }, async (req) => {
 		// Obtenir le token actuel et vérifier qu'il est valide
