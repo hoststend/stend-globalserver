@@ -200,6 +200,10 @@ function createRoutes(){
 	})
 
 	// Routes liés à la gestion du compte
+	fastify.get("/account/details", { config: { rateLimit: { max: 120, timeWindow: "1 minute" } } }, async (req) => {
+		var user = await getUserFromRequest(req)
+		return { success: true, userId: user?.id }
+	})
 	fastify.get("/account/transferts", { config: { rateLimit: { max: 100, timeWindow: "1 minute" } } }, async (req) => { // retourne uniquement les transferts créés en étant authentifié
 		// Obtenir l'utilisateur
 		var user = await getUserFromRequest(req)
