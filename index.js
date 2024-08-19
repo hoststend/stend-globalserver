@@ -216,7 +216,7 @@ function createRoutes(){
 		transferts = transferts.data.filter(transfer => parseInt(transfer.expiresDate) > new Date().getTime())
 
 		// Retourner les transferts
-		return { success: true, userId: user?.id, transferts: transferts?.map(transfer => { return { id: transfer.transferId, webUrl: transfer.webUrl, expiresDate: transfer.expiresDate, nickname: transfer.nickname, fileName: transfer.fileName } }) || [] }
+		return { success: true, userId: user?.id, transferts: transferts?.map(transfer => { return { id: transfer.transferId, webUrl: transfer.webUrl, expiresDate: transfer.expiresDate, creationDate: transfer.creationDate, nickname: transfer.nickname, fileName: transfer.fileName } }) || [] }
 	})
 	fastify.post("/account/reset", { config: { rateLimit: { max: 10, timeWindow: "1 minute" } } }, async (req) => {
 		// Obtenir le token actuel et vérifier qu'il est valide
@@ -325,7 +325,7 @@ function createRoutes(){
 		// Créer un transfert
 		var transferId = generateRandomString(16, true)
 		while((await supabase.from("stendglobal-transfers").select("*").eq("transferId", transferId)).data.length) transferId = generateRandomString(16, true)
-		var newTransfer = await supabase.from("stendglobal-transfers").insert({ transferId, authorId: user?.id || null, webUrl, expiresDate: new Date().getTime() + 1000 * 60 * expiresTime, apiUrl, authorIp, latitude, longitude, nickname, fileName })
+		var newTransfer = await supabase.from("stendglobal-transfers").insert({ transferId, authorId: user?.id || null, webUrl, expiresDate: new Date().getTime() + 1000 * 60 * expiresTime, creationDate: Date.now(), apiUrl, authorIp, latitude, longitude, nickname, fileName })
 		if(newTransfer.error) throw { statusCode: 500, error: "Erreur lors de la création du transfert", message: `Supabase a retourné une erreur : ${newTransfer.error.message}` }
 
 		// Retourner le transfert
@@ -390,7 +390,7 @@ function createRoutes(){
 		// Retourner les transferts
 		return {
 			success: true,
-			transferts: transfers?.map(transfer => { return { id: transfer.transferId, webUrl: transfer.webUrl, expiresDate: transfer.expiresDate, nickname: transfer.nickname, fileName: transfer.fileName } }) || [],
+			transferts: transfers?.map(transfer => { return { id: transfer.transferId, webUrl: transfer.webUrl, expiresDate: transfer.expiresDate, creationDate: transfer.creationDate, nickname: transfer.nickname, fileName: transfer.fileName } }) || [],
 			method: { instanceAndIp: !!apiUrl, location: !!latitude && !!longitude, account: !!user?.id }
 		}
 	})
