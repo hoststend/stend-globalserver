@@ -1,7 +1,7 @@
 {
 	"private": true,
 	"name": "stend-globalserver",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"description": "Serveur global permettant l'accès à des fonctionnalités entres plusieurs instances de Stend",
 	"main": "index.js",
 	"scripts": {
