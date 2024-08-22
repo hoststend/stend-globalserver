@@ -379,9 +379,18 @@ function createRoutes(){
 		transfers = transfers.data.filter(transfer => {
 			if(transfer.expiresDate < new Date().getTime()) return false // éviter les transfert expiré
 
-			if(user?.id && transfer.authorId === user.id) return true // garder les transfert créé par l'utilisateur
-			if(apiUrl && authorIp && transfer.apiUrl === apiUrl && transfer.authorIp === authorIp) return true // transfert sur la même instance avec la même IP
-			if(latitude && longitude && transfer.latitude && transfer.longitude && distanceGPS(latitude, longitude, transfer.latitude, transfer.longitude) < 2) return true // transfert à moins de 2km // TODO: on vérifiera si cette distance est correcte avec des tests irl quand ça sera intégrée
+			if(user?.id && transfer.authorId === user.id){ // garder les transfert créé par l'utilisateur
+				transfer.methodUsed = "account"
+				return true
+			}
+			if(latitude && longitude && transfer.latitude && transfer.longitude && distanceGPS(latitude, longitude, transfer.latitude, transfer.longitude) < 2.2){ // transfert à moins de 2,2km // TODO: on vérifiera si cette distance est correcte avec des tests irl quand ça sera intégrée
+				transfer.methodUsed = "position"
+				return true
+			}
+			if(apiUrl && authorIp && transfer.apiUrl === apiUrl && transfer.authorIp === authorIp){ // transfert sur la même instance avec la même IP
+				transfer.methodUsed = "instanceAndIp"
+				return true
+			}
 
 			return false
 		})
@@ -390,7 +399,15 @@ function createRoutes(){
 		// Retourner les transferts
 		return {
 			success: true,
-			transferts: transfers?.map(transfer => { return { id: transfer.transferId, webUrl: transfer.webUrl, expiresDate: transfer.expiresDate, creationDate: transfer.creationDate, nickname: transfer.nickname, fileName: transfer.fileName } }) || [],
+			transferts: transfers?.map(transfer => { return {
+				id: transfer.transferId,
+				webUrl: transfer.webUrl,
+				expiresDate: transfer.expiresDate,
+				creationDate: transfer.creationDate,
+				nickname: transfer.nickname,
+				fileName: transfer.fileName,
+				methodUsed: transfer.methodUsed
+			} }) || [],
 			method: { instanceAndIp: !!apiUrl, location: !!latitude && !!longitude, account: !!user?.id }
 		}
 	})
