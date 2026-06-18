@@ -1,5 +1,16 @@
-// Configurer les variables d'env
-require("dotenv").config()
+
+if(!global.fetch){ // used by PocketBase
+	console.warn("Fetch is not available in this env, using 'cross-fetch' polyfill")
+	console.warn(`You should consider using the latest NodeJS/Bun version to avoid this warning, current version: ${process.versions.node}`)
+	require("cross-fetch/polyfill")
+}
+
+if(!process.env.SUPABASE_LINK || !process.env.SUPABASE_PUBLIC_KEY) {
+	console.error("SUPABASE_LINK or SUPABASE_PUBLIC_KEY environment variable is not set. If this variable should load, make sure that environment variables are properly loaded (.env file can be loaded using Bun runtime).")
+	process.exit(1)
+}
+
+if(!process.versions.bun) console.warn("Stend Global Server has only been tested with Bun runtime, and may cause issues with NodeJS.")
 
 // Variables
 var reverseProxy = process.env.USING_REVERSE_PROXY === "cloudflare" ? "cloudflare" : process.env.USING_REVERSE_PROXY ? "true" : false // Si on utilise un reverse proxy, on le précise ici
@@ -8,7 +19,6 @@ var apiVersion = require("./package.json").version || "0.0.0" // Version de l'AP
 // Importer quelques librairies
 const fastify = require("fastify")({ logger: { level: "info" }, trustProxy: !!reverseProxy })
 fastify.register(require("@fastify/formbody"))
-const fetch = require("node-fetch")
 const removeProfanity = require("./utils/profanity")
 
 // Supabase
